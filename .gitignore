@@ -1,0 +1,11 @@
+#ide
+.vscode/
+.idea/
+
+# xmake
+build/
+.xmake/
+
+# cmake
+cmake-build-debug/
+CMakeLists.txt
