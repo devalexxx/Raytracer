@@ -12,7 +12,7 @@ namespace rtc
 		auto GenerateIntersection = [&](float t) -> Intersection {
 			auto point = glm::normalize(ray.direction) * t + ray.origin;
 			return { point, t, glm::normalize(point - sphere.center), sphere.material, shape };
-        };
+		};
 
 		const auto oc = ray.origin - sphere.center;
 

@@ -9,27 +9,28 @@
 
 #include <optional>
 
-namespace rtc {
+namespace rtc
+{
 
 	struct Material;
 	struct Shape;
 
-    struct Ray
-    {
-        glm::vec3 origin;
-        glm::vec3 direction;
-    };
+	struct Ray
+	{
+			glm::vec3 origin;
+			glm::vec3 direction;
+	};
 
-    struct Intersection
-    {
-        glm::vec3 point;
-        float     distance;
-		glm::vec3 normal;
-		std::reference_wrapper<const Material> material;
-		std::reference_wrapper<const Shape>    shape;
-    };
+	struct Intersection
+	{
+			glm::vec3                              point;
+			float                                  distance;
+			glm::vec3                              normal;
+			std::reference_wrapper<const Material> material;
+			std::reference_wrapper<const Shape>    shape;
+	};
 
-    using IntersectionOpt = std::optional<Intersection>;
+	using IntersectionOpt = std::optional<Intersection>;
 
 }
 
