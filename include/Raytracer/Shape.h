@@ -15,35 +15,13 @@
 namespace rtc
 {
 
-	struct Shape
-	{
-			using IntersectFunc = std::function<IntersectionOpt(const Ray&)>;
-
-			Shape() = delete;
-			template<typename T>
-			Shape(T shape);
-
-			IntersectFunc Intersect;
-	};
-
-	//	inline bool operator==(const Shape& lhs, const Shape& rhs);
-	//	inline bool operator!=(const Shape& lhs, const Shape& rhs);
-
 	struct Sphere
 	{
 			glm::vec3 center;
 			float     radius;
 			Material  material;
 	};
-	IntersectionOpt Intersect(const Ray& ray, const Shape& shape, const Sphere& sphere);
-
-	struct Surface
-	{
-			glm::vec3 center;
-			glm::vec3 normal;
-			Material  material;
-	};
-	IntersectionOpt Intersect(const Ray& ray, const Shape& shape, const Surface& surface);
+	IntersectionOpt Intersect(const Ray& ray, const Sphere& sphere);
 
 }
 

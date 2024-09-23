@@ -10,16 +10,16 @@
 namespace rtc
 {
 
-	glm::vec3 ComputeLight(const Intersection& it, std::span<Shape> shapes, const Light& light)
+	glm::vec3 ComputeLight(const Intersection& it, const std::vector<Sphere>& spheres, const Light& light)
 	{
 		Ray             ray { light.position, it.point - light.position };
-		IntersectionOpt lightToPoint = it.shape.get().Intersect(ray);
+		IntersectionOpt lightToPoint = Intersect(ray, it.sphere);
 		bool            apply        = true;
 		if (lightToPoint.has_value())
 		{
-			for (auto& shape: shapes)
+			for (auto& sphere: spheres)
 			{
-				auto lightToShape = shape.Intersect(ray);
+				auto lightToShape = Intersect(ray, sphere);
 				if (lightToShape.has_value())
 				{
 					if (lightToPoint->distance > lightToShape->distance)
@@ -38,7 +38,7 @@ namespace rtc
 			auto lemit = light.quantity;
 			auto li    = glm::normalize(it.point - light.position);
 
-			auto lo = it.material.get().emission + vplp * (lemit / d2) * it.material.get().albedo * glm::abs(glm::dot(it.normal, li));
+			auto lo = it.sphere.material.emission + vplp * (lemit / d2) * it.sphere.material.albedo * glm::abs(glm::dot(it.normal, li));
 
 			return lo;
 		}

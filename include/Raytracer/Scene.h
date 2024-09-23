@@ -20,9 +20,9 @@ namespace rtc
 
 	struct Scene
 	{
-			Camera             camera;
-			std::vector<Light> lights;
-			std::vector<Shape> shapes;
+			Camera              camera;
+			std::vector<Light>  lights;
+			std::vector<Sphere> spheres;
 	};
 
 }

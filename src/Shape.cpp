@@ -7,11 +7,11 @@
 namespace rtc
 {
 
-	IntersectionOpt Intersect(const Ray& ray, const Shape& shape, const Sphere& sphere)
+	IntersectionOpt Intersect(const Ray& ray, const Sphere& sphere)
 	{
 		auto GenerateIntersection = [&](float t) -> Intersection {
 			auto point = glm::normalize(ray.direction) * t + ray.origin;
-			return { point, t, glm::normalize(point - sphere.center), sphere.material, shape };
+			return { point, t, glm::normalize(point - sphere.center), sphere };
 		};
 
 		const auto oc = ray.origin - sphere.center;
@@ -46,22 +46,22 @@ namespace rtc
 		}
 	}
 
-	IntersectionOpt Intersect(const Ray& ray, const Shape& shape, const Surface& surface)
-	{
-		float denon = glm::dot(surface.normal, glm::normalize(ray.direction));
-		if (denon > 1e-6)
-		{
-			float t = glm::dot(surface.center - ray.origin, surface.normal) / denon;
-			if (t >= 0)
-			{
-				auto point = glm::normalize(ray.direction) * t + ray.origin;
-				return Intersection { point, t, surface.normal, surface.material, shape };
-			}
-			else
-			{
-				return std::nullopt;
-			}
-		}
-		return std::nullopt;
-	}
+//	IntersectionOpt Intersect(const Ray& ray, const Shape& shape, const Surface& surface)
+//	{
+//		float denon = glm::dot(surface.normal, glm::normalize(ray.direction));
+//		if (denon > 1e-6)
+//		{
+//			float t = glm::dot(surface.center - ray.origin, surface.normal) / denon;
+//			if (t >= 0)
+//			{
+//				auto point = glm::normalize(ray.direction) * t + ray.origin;
+//				return Intersection { point, t, surface.normal, surface.material, shape };
+//			}
+//			else
+//			{
+//				return std::nullopt;
+//			}
+//		}
+//		return std::nullopt;
+//	}
 }

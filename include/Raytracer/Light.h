@@ -13,7 +13,7 @@ namespace rtc
 {
 
 	struct Intersection;
-	struct Shape;
+	struct Sphere;
 
 	struct Light
 	{
@@ -21,7 +21,7 @@ namespace rtc
 			glm::vec3 quantity;
 	};
 
-	glm::vec3 ComputeLight(const Intersection& it, std::span<Shape> shapes, const Light& light);
+	glm::vec3 ComputeLight(const Intersection& it, const std::vector<Sphere>& spheres, const Light& light);
 
 }
 

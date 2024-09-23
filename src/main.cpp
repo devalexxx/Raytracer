@@ -12,6 +12,7 @@
 
 int main(int /* argc */, char** /* argv */)
 {
+
 	using namespace rtc;
 
 	constexpr size_t w = 1280;
@@ -20,18 +21,22 @@ int main(int /* argc */, char** /* argv */)
 	Scene scene {
 		{ { 0.f, 0.f, -10000.f } },
 		{
-			{ { 0.f, -1000.f, 1500.f }, { 500.f, 500.f, 500.f } },
-//			{ { 800.f, -800.f, 800.f }, { 500.f, 500.f, 500.f } },
+			{ { 0.f, 0.f, 1500.f }, { 500.f, 500.f, 500.f } },
 		},
-		{
-			Shape(Sphere { { 300.f, -200.f, 1000.f }, 200.f, { { 1.f, 1.f, 1.f }, { 0.f, 0.f, 0.f } } }),
-		  Shape(Sphere { { -300.f, -200.f, 1000.f }, 200.f, { { 1.f, 1.f, 1.f }, { 0.f, 0.f, 0.f } } }),
-		  Shape(Surface { { 0.f, 820.f, -500.f }, { 0.f, 1.f, 0.2f }, { { 1.f, 1.f, 1.f }, { 0.f, 0.f, 0.f } } }),
-		  Shape(Surface { { 1280.f, 0.f, -500.f }, { 1.f, 0.f, 0.f }, { { 1.f, 1.f, 1.f }, { 0.f, 0.f, 0.f } } }),
-		  Shape(Surface { { -1280.f,0.f, -500.f }, { -1.f, 0.f, 0.f }, { { 1.f, 1.f, 1.f }, { 0.f, 0.f, 0.f } } }),
-		  Shape(Surface { { 0.f, 0.f, 3000.f }, { 0.f, -0.2f, 1.f }, { { 1.f, 1.f, 1.f }, { 0.f, 0.f, 0.f } } })
-		}
+		{}
 	};
+
+	Material sphereMaterial {{ 1.f, 1.f, 1.f }, { 0.f, 0.f, 0.f }};
+	for (int x = -1000; x < 1000; x += 400)
+	{
+		for (int y = -1000; y < 1000; y += 400)
+		{
+			for (int z = 500; z < 2500; z += 400)
+			{
+				scene.spheres.emplace_back(glm::vec3(x, y, z), 100, sphereMaterial);
+			}
+		}
+	}
 
 	ImageRepr<w, h> imageRepr(glm::vec3(0.f, 0.f, 0.f));
 	for (size_t y = 0; y < h; ++y)
@@ -43,21 +48,21 @@ int main(int /* argc */, char** /* argv */)
 			const Ray ray { pixel, pixel - scene.camera.position };
 
 			IntersectionOpt nearestIt;
-			for (auto& shape: scene.shapes)
+			for (auto& sphere: scene.spheres)
 			{
-				auto it = shape.Intersect(ray);
+				auto it = Intersect(ray, sphere);
 				if (it.has_value())
 				{
 					if (nearestIt.has_value())
 					{
 						if (nearestIt->distance > it->distance)
 						{
-							nearestIt = it;
+							nearestIt.emplace(*it);
 						}
 					}
 					else
 					{
-						nearestIt = it;
+						nearestIt.emplace(*it);
 					}
 				}
 			}
@@ -67,7 +72,7 @@ int main(int /* argc */, char** /* argv */)
 				glm::vec3 color { 0.f, 0.f, 0.f };
 				for (auto& light: scene.lights)
 				{
-					color += ComputeLight(*nearestIt, scene.shapes, light);
+					color += ComputeLight(*nearestIt, scene.spheres, light);
 				}
 				imageRepr[y * w + x] = color;
 			}
