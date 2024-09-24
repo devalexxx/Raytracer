@@ -1,6 +1,8 @@
 set_project("Raytracer")
 set_version("0.0.1")
 
+add_rules("mode.debug", "mode.release")
+
 set_languages("c++23")
 set_warnings("allextra")
 
