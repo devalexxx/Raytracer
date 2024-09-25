@@ -20,7 +20,7 @@ namespace rtc
 	{
 			glm::vec3       center;
 			float           radius;
-			const Material& material;
+			const Material* material;
 	};
 
 	struct AABB
@@ -28,12 +28,16 @@ namespace rtc
 			glm::vec3 min, max;
 	};
 
+	enum class Axis { X, Y, Z };
+
 	IntersectionOpt Intersect(const Ray& ray, const Sphere& sphere);
 	IntersectionOpt Intersect(const Ray& ray, const AABB& aabb);
 
 	ObjectIntersectionOpt IntersectObject(const Ray& ray, const Sphere& sphere);
 
 	void Merge(AABB& src, const AABB& other);
+
+	Axis LongestAxis(const AABB& aabb);
 
 }
 

@@ -34,6 +34,7 @@ namespace rtc
 	ObjectIntersectionOpt Intersect(const Ray& ray, const ObjectHierarchy& oh);
 
 	void BuildObjectHierarchy(ObjectHierarchy& oh);
+	void AddObject(Leaf& oh, Sphere&& sphere);
 	void AddObject(ObjectHierarchy& oh, Sphere&& sphere);
 }
 

@@ -71,7 +71,7 @@ namespace rtc
 		if (IntersectionOpt it = Intersect(ray, sphere); it.has_value())
 		{
 			auto point = glm::normalize(ray.direction) * it->distance + ray.origin;
-			return {{ { it->distance }, point, glm::normalize(point - sphere.center), sphere.material }};
+			return {{ { it->distance }, point, glm::normalize(point - sphere.center), *sphere.material }};
 		}
 		else
 			return std::nullopt;
@@ -85,6 +85,18 @@ namespace rtc
 		src.max.x = std::max(src.max.x, other.max.x);
 		src.max.y = std::max(src.max.y, other.max.y);
 		src.max.z = std::max(src.max.z, other.max.z);
+	}
+
+	Axis LongestAxis(const AABB& aabb)
+	{
+		auto size = aabb.max - aabb.min;
+
+		if (size.x >= size.y && size.x >= size.z)
+			return Axis::X;
+		else if (size.y >= size.z)
+			return Axis::Y;
+		else
+			return Axis::Z;
 	}
 
 }
