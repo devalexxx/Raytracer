@@ -7,21 +7,21 @@
 
 #include <glm/glm.hpp>
 
-#include <span>
+#include <vector>
 
 namespace rtc
 {
 
-	struct Intersection;
-	struct Sphere;
+	struct ObjectIntersection;
+	struct Scene;
 
 	struct Light
 	{
 			glm::vec3 position;
-			glm::vec3 quantity;
+			glm::vec3 emission;
 	};
 
-	glm::vec3 ComputeLight(const Intersection& it, const std::vector<Sphere>& spheres, const Light& light);
+	glm::vec3 ComputeLight(const ObjectIntersection& it, const Scene& scene);
 
 }
 

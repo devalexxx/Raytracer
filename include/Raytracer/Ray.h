@@ -13,25 +13,27 @@ namespace rtc
 {
 
 	struct Material;
-	struct Sphere;
+
+	struct Intersection
+	{
+			float distance;
+	};
+	using IntersectionOpt = std::optional<Intersection>;
+
+	struct ObjectIntersection : public Intersection
+	{
+			glm::vec3 point;
+			glm::vec3 normal;
+
+			const Material& material;
+	};
+	using ObjectIntersectionOpt = std::optional<ObjectIntersection>;
 
 	struct Ray
 	{
 			glm::vec3 origin;
 			glm::vec3 direction;
 	};
-
-	struct Intersection
-	{
-			glm::vec3     point;
-			float         distance;
-			glm::vec3     normal;
-			const Sphere& sphere;
-
-//			Intersection(Intersection&& it)  noexcept : point(it.point), distance(it.distance), normal(it.normal), sphere(it.sphere) {};
-	};
-
-	using IntersectionOpt = std::optional<Intersection>;
 
 }
 

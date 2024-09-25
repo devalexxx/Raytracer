@@ -6,7 +6,7 @@
 #define RAYTRACER_SCENE_H
 
 #include <Raytracer/Light.h>
-#include <Raytracer/Shape.h>
+#include <Raytracer/ObjectHierarchy.h>
 
 #include <vector>
 
@@ -20,9 +20,9 @@ namespace rtc
 
 	struct Scene
 	{
-			Camera              camera;
-			std::vector<Light>  lights;
-			std::vector<Sphere> spheres;
+			Camera    		   camera;
+			std::vector<Light> lights;
+			ObjectHierarchy    objects;
 	};
 
 }

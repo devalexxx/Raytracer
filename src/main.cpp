@@ -12,31 +12,34 @@
 
 int main(int /* argc */, char** /* argv */)
 {
-
 	using namespace rtc;
 
 	constexpr size_t w = 1280;
 	constexpr size_t h = 720;
 
-	Scene scene {
-		{ { 0.f, 0.f, -10000.f } },
-		{
-			{ { 0.f, 0.f, 1500.f }, { 500.f, 500.f, 500.f } },
-		},
-		{}
+	Material sphereMaterial {{ 1.f, 1.f, 1.f }, { 0.f, 0.f, 0.f }};
+
+	Scene scene
+	{
+		.camera={ { 0.f, 0.f, -10000.f } },
+		.lights={ { { 0.f, 0.f, 0.f }, { 500.f, 500.f, 500.f } } },
+		.objects=Leaf{}
 	};
 
-	Material sphereMaterial {{ 1.f, 1.f, 1.f }, { 0.f, 0.f, 0.f }};
-	for (int x = -1000; x < 1000; x += 400)
+	auto n = 10;
+	auto d = 300.f / (float)n;
+	auto r = 80.f / (float)n;
+	for (int x = -n; x < n; ++x)
 	{
-		for (int y = -1000; y < 1000; y += 400)
+		for (int y = -n; y < n; ++y)
 		{
-			for (int z = 500; z < 2500; z += 400)
+			for (int z = -n; z < n; ++z)
 			{
-				scene.spheres.emplace_back(glm::vec3(x, y, z), 100, sphereMaterial);
+				AddObject(scene.objects, { glm::vec3((float)x * d, (float)y * d, 500.f + (float)z * d), r, sphereMaterial });
 			}
 		}
 	}
+//	BuildObjectHierarchy(scene.objects);
 
 	ImageRepr<w, h> imageRepr(glm::vec3(0.f, 0.f, 0.f));
 	for (size_t y = 0; y < h; ++y)
@@ -44,37 +47,12 @@ int main(int /* argc */, char** /* argv */)
 		for (size_t x = 0; x < w; ++x)
 		{
 			const glm::vec3 pixel { (float) x * 2.f - w, (float) y * 2.f - h, 0.f };
-
 			const Ray ray { pixel, pixel - scene.camera.position };
 
-			IntersectionOpt nearestIt;
-			for (auto& sphere: scene.spheres)
+			auto it = Intersect(ray, scene.objects);
+			if (it.has_value())
 			{
-				auto it = Intersect(ray, sphere);
-				if (it.has_value())
-				{
-					if (nearestIt.has_value())
-					{
-						if (nearestIt->distance > it->distance)
-						{
-							nearestIt.emplace(*it);
-						}
-					}
-					else
-					{
-						nearestIt.emplace(*it);
-					}
-				}
-			}
-
-			if (nearestIt.has_value())
-			{
-				glm::vec3 color { 0.f, 0.f, 0.f };
-				for (auto& light: scene.lights)
-				{
-					color += ComputeLight(*nearestIt, scene.spheres, light);
-				}
-				imageRepr[y * w + x] = color;
+				imageRepr[y * w + x] = ComputeLight(*it, scene);
 			}
 			else
 			{
