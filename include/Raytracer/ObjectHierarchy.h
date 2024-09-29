@@ -18,15 +18,17 @@ namespace rtc
 
 	using ObjectHierarchy = std::variant<Leaf, Node>;
 
+	using flim = std::numeric_limits<float>;
+
 	struct Leaf
 	{
-			AABB                aabb;
+			AABB                aabb { glm::vec3(flim::max()), glm::vec3(flim::lowest()) };
 			std::vector<Sphere> spheres;
 	};
 
 	struct Node
 	{
-			AABB                             aabb;
+			AABB                             aabb { glm::vec3(flim::max()), glm::vec3(flim::lowest()) };
 			std::unique_ptr<ObjectHierarchy> left;
 			std::unique_ptr<ObjectHierarchy> right;
 	};
