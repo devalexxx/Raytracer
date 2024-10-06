@@ -23,6 +23,7 @@ namespace rtc
 			Camera    		   camera;
 			std::vector<Light> lights;
 			ObjectHierarchy    objects;
+			std::vector<Material> materials;
 	};
 
 }
