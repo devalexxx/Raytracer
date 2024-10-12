@@ -6,6 +6,12 @@
 build/
 .xmake/
 
+# Clangd
+.cache/
+
 # cmake
 cmake-build-debug/
 CMakeLists.txt
+
+# NeoVim
+compile_commands.json
