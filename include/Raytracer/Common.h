@@ -8,9 +8,36 @@
 #include <glm/glm.hpp>
 
 #include <vector>
+#include <deque>
+#include <atomic>
+#include <mutex>
+#include <functional>
+#include <thread>
 
 namespace rtc
 {
+
+	class ThreadPool
+	{
+		public:
+			explicit ThreadPool(size_t count);
+			~ThreadPool();
+
+			void Post(std::function<void()> job);
+			void Join();
+
+		private:
+			void Run() noexcept;
+
+		private:
+			std::atomic_bool mIsActive;
+			std::vector<std::thread> mPool;
+			std::condition_variable mCv;
+			std::mutex mGuard;
+			std::condition_variable mCvFinished;
+			std::atomic_uint processed;
+			std::deque<std::function<void()>> mPendingTasks;
+	};
 
 	template<typename T, size_t W, size_t H, size_t C = 1>
 	struct HeapArray : public std::vector<T>

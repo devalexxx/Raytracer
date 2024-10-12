@@ -77,6 +77,12 @@ rtc::Scene BuildBasicScene()
 	return scene;
 }
 
+auto Gen() -> std::default_random_engine&
+{
+	static thread_local std::default_random_engine gen;
+	return gen;
+}
+
 int main(int /* argc */, char** /* argv */)
 {
 	using namespace rtc;
@@ -84,44 +90,40 @@ int main(int /* argc */, char** /* argv */)
 	constexpr size_t w = 1280;
 	constexpr size_t h = 720;
 
-	Scene scene = BuildBasicScene();
-//	Scene scene = BuildBenchmarkScene(2);
+//	Scene scene = BuildBasicScene();
+	Scene scene = BuildBenchmarkScene(50);
+
+	auto ComputePixelFunctor = [&scene](size_t x, size_t y, glm::vec3* v) -> std::function<void()>
+	{
+		return [=, &scene] -> void
+		{
+			std::uniform_real_distribution<float> dist(.0f, .99f);
+			for (size_t k = 0; k < 10; ++k)
+			{
+				const glm::vec3 pixel { (float) x * 2.f + dist(Gen()) - w, (float) y * 2.f + dist(Gen()) - h, 0.f };
+				const Ray       ray { pixel, pixel - scene.camera.position };
+
+				auto it = Intersect(ray, scene.objects);
+				if (it.has_value())
+				{
+					*v += ComputeLight(*it, scene);
+				}
+			}
+		};
+	};
 
 	ImageRepr<w, h> imageRepr(glm::vec3(0.f, 0.f, 0.f));
-
-	std::default_random_engine 			  gen;
-	std::uniform_real_distribution<float> dist(.0f, .99f);
-	size_t aliasingDepth = 10;
+	ThreadPool      pool(std::thread::hardware_concurrency());
 
 	auto start = std::chrono::steady_clock::now();
 	for (size_t y = 0; y < h; ++y)
 	{
 		for (size_t x = 0; x < w; ++x)
 		{
-//			for (size_t k = 0; k < aliasingDepth; ++k)
-//			{
-//				const glm::vec3 pixel { (float) x * 2.f + dist(gen) - w, (float) y * 2.f + dist(gen) - h, 0.f };
-//				const Ray       ray { pixel, pixel - scene.camera.position };
-//
-//				auto it = Intersect(ray, scene.objects);
-//				if (it.has_value())
-//				{
-//					imageRepr[y * w + x] += ComputeLight(*it, scene);
-//				}
-//			}
-
-//			imageRepr[y * w + y] /= aliasingDepth;
-
-			const glm::vec3 pixel { (float) x * 2.f - w, (float) y * 2.f - h, 0.f };
-			const Ray       ray { pixel, pixel - scene.camera.position };
-
-			auto it = Intersect(ray, scene.objects);
-			if (it.has_value())
-			{
-				imageRepr[y * w + x] = ComputeLight(*it, scene);
-			}
+			pool.Post(ComputePixelFunctor(x, y, &imageRepr[y * w + x]));
 		}
 	}
+	pool.Join();
 
 	fmt::print("{}\n", std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::steady_clock::now() - start).count());
 
