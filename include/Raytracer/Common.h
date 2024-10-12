@@ -27,13 +27,13 @@ namespace rtc
 	using Image = HeapArray<unsigned char, W, H, 3>;
 
 	template<size_t W, size_t H>
-	void SaveImage(const Image<W, H>& image, const char* path);
-
-	template<size_t W, size_t H>
 	using ImageRepr = HeapArray<glm::vec3, W, H>;
 
 	bool AlmostEqual(float lhs, float rhs, float epsilon);
 	bool AlmostEqual(glm::vec3 lhs, glm::vec3 rhs, float epsilon);
+
+	template<size_t W, size_t H>
+	void SaveImage(const Image<W, H>& image, const char* path);
 
 	template<size_t W, size_t H>
 	Image<W, H> ToneMap(const ImageRepr<W, H>& repr);
